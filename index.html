@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shabbos Weather Board</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      overflow: hidden;
+    }
+    h1 {
+      margin-top: 16px;
+    }
+    #weather {
+      margin-top: 12px;
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .forecast-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shabbos Weather Display</h1>
+  <div id="weather">Loading weather...</div>
+
+  <script>
+    // Automatically detect user's location via browser (with permission)
+    let LAT = null;
+    let LON = null;
+
+    // INSERT YOUR API KEY HERE
+    const API_KEY = "18e3083b432039dad167aa4ba6133994";
+
+    async function getLocationAndStart() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          LAT = pos.coords.latitude;
+          LON = pos.coords.longitude;
+          fetchWeather();
+          setInterval(fetchWeather, 1800000);
+        }, () => {
+          // fallback: Melbourne
+          LAT = -37.8136;
+          LON = 144.9631;
+          fetchWeather();
+          setInterval(fetchWeather, 1800000);
+        });
+      } else {
+        LAT = -37.8136;
+        LON = 144.9631;
+        fetchWeather();
+        setInterval(fetchWeather, 1800000);
+      }
+    }
+
+    async function fetchWeather() {
+      const forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric`;
+      const uvURL = `https://api.openweathermap.org/data/2.5/uvi?lat=${LAT}&lon=${LON}&appid=${API_KEY}`;
+
+      const [forecastRes, uvRes] = await Promise.all([
+        fetch(forecastURL),
+        fetch(uvURL)
+      ]);
+
+      const forecastData = await forecastRes.json();
+      const uvData = await uvRes.json();
+      renderWeather(forecastData, uvData);
+    }
+
+    function renderWeather(data, uv) {
+      const container = document.getElementById("weather");
+
+      const now = data.list[0];
+      const next3 = data.list.slice(0, 3);
+      const next24 = data.list.slice(0, 8);
+
+      container.innerHTML = `
+        <div class="section">
+          <h2>Current Weather</h2>
+          <p>🌡️ Temp: ${now.main.temp}°C</p>
+          <p>💧 Humidity: ${now.main.humidity}%</p>
+          <p>🌤️ Conditions: ${now.weather[0].description}</p>
+          <p>☀️ UV Index: ${uv.value}</p>
+        </div>
+
+        <div class="section">
+          <h2>Next 3 Hours</h2>
+          ${next3.map(item => `
+            <div class="forecast-row">
+              <span>${new Date(item.dt * 1000).getHours()}:00</span>
+              <span>${item.main.temp}°C</span>
+              <span>${item.weather[0].main}</span>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="section">
+          <h2>Next 24 Hours</h2>
+          ${next24.map(item => `
+            <div class="forecast-row">
+              <span>${new Date(item.dt * 1000).getHours()}:00</span>
+              <span>${item.main.temp}°C</span>
+              <span>${item.weather[0].main}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    getLocationAndStart();
+  </script>
+</body>
+</html>
