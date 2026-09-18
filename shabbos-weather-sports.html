@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shabbos · Weather & Sport</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:#e6ebe6;color:#203a30;font:17px/1.35 system-ui,sans-serif}
+#board{position:absolute;width:1280px;height:720px;transform-origin:top left;padding:26px 30px;display:grid;grid-template-rows:74px 1fr 30px;gap:15px;background:#f3f5ef;overflow:hidden}
+header,.heading,.actions{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:30px;letter-spacing:-1px;margin:0}h2{font-size:22px;margin:0}h3{font-size:18px;margin:0}p{margin:5px 0}.small{font-size:13px;color:#53665b}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:700;color:#647668}.pill{font-size:12px;background:#e6eee4;padding:5px 10px;border-radius:99px;white-space:nowrap}
+.layout{min-height:0;display:grid;grid-template-columns:700px 1fr;gap:20px}.weather{display:grid;grid-template-rows:140px 1fr;gap:14px;min-height:0}.panel{background:#fff;border:1px solid #dce4da;border-radius:16px;padding:18px 20px;min-width:0;min-height:0}
+.current-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:20px;align-items:center}#temperature{font-size:51px;line-height:1.1;letter-spacing:-2px}.metric{font-size:30px;font-weight:600}#conditions{font-size:15px;margin:2px 0}.forecast-panel{display:flex;flex-direction:column}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:16px;margin-top:8px}th{text-align:left;color:#657266;font-size:12px;font-weight:600}td,th{height:31px;padding:4px 5px;border-bottom:1px solid #edf0e9}th:first-child,td:first-child{width:130px;padding-left:0}th:nth-child(2){width:75px}th:nth-child(3){width:85px}th:nth-child(4){width:58px}td:last-child{font-size:14px}tr:last-child td{border-bottom:0}#status{margin-top:auto;line-height:1.2;max-height:34px}
+.sports{display:grid;grid-template-rows:56px 1fr 53px;gap:10px}.sports-top p{margin:4px 0 0}#matches{display:grid;grid-template-rows:repeat(3,1fr);gap:10px;min-height:0}.match{border:1px solid #dfe6dc;border-radius:12px;padding:12px 14px;background:#f9fbf7;min-width:0;display:flex;flex-direction:column;justify-content:center}.match-head{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#5e7064;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}.match-head span:first-child{max-width:275px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.match-status{white-space:nowrap;font-weight:700}.live{color:#246648}.notice{color:#8b4d18!important}.side{display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:26px}.name{font-size:16px;max-width:275px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.score{font-size:20px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}.winner .name{font-weight:700}.match-detail{font-size:11px;color:#607164;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty{justify-content:center;color:#657368;font-size:14px}.sports-foot{font-size:12px;color:#627165;line-height:1.35}.sports-foot p{margin:0}footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#657366}a{color:inherit}button,input,select{font:inherit;border:1px solid #b9c8b9;border-radius:8px;padding:9px 12px;color:#234031;background:#fff}button{cursor:pointer}button:hover{background:#e6eee3}button:disabled{opacity:.5}button.primary{background:#2c503f;color:white;border-color:#2c503f}:focus-visible{outline:3px solid #80ab76;outline-offset:2px}#location{max-width:620px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#clock{text-align:right;font-size:16px}
+#settings{position:absolute;inset:0;background:#19342699;display:flex;align-items:center;justify-content:center;z-index:4}.dialog{width:900px;height:604px;background:#f9fbf6;border-radius:20px;padding:28px;box-shadow:0 20px 80px #18302544;display:flex;flex-direction:column;gap:14px}.settings-content{display:grid;grid-template-columns:1fr 1fr;gap:28px;min-height:0}.settings-content section{min-width:0}fieldset{border:0;padding:0;margin:12px 0}legend{font-weight:600;margin-bottom:8px}.choice{display:block;padding:7px 0}.choice input{margin-right:8px}form{display:flex;gap:7px;margin:12px 0}form input{min-width:0;width:100%}#results{display:grid;gap:6px}#results button{font-size:14px;padding:8px;text-align:left}.settings-note{margin-top:auto;font-size:13px;color:#657468}#location-status,#search-status{font-size:13px;min-height:16px}.settings-content label[for]{display:block;margin:10px 0 5px}#retention{width:100%}.settings-content p{font-size:14px}[hidden]{display:none!important}
+.weather>.panel:first-child{padding:14px 20px}#temperature{font-size:42px}#conditions{font-size:14px}td,th{height:29px}#status{font-size:12px;line-height:1.15}
+</style>
+</head>
+<body>
+<main id="board">
+<header><div><div class="eyebrow">Your weekend, at a glance</div><h1>Shabbos · Weather & Sport</h1><p id="location" class="small">Finding your location…</p></div><div><p id="clock"></p><div class="actions"><button id="fullscreen" type="button">Full screen</button><button id="open-settings" type="button">Settings</button></div></div></header>
+<div class="layout">
+<div class="weather">
+<section class="panel"><div id="current"><div class="current-grid"><div><span class="eyebrow">Current conditions</span><div id="temperature">—°C</div><p id="conditions">Loading weather…</p></div><div><div class="small">Humidity</div><div id="humidity" class="metric">—</div></div><div><div class="small">UV · hourly estimate</div><div id="uv" class="metric">—</div></div></div><p id="as-of" class="small"></p></div></section>
+<section class="panel forecast-panel"><div class="heading"><h2>Next 24 hours</h2><span class="pill">Every 3 hours</span></div><table aria-label="Weather forecast"><thead><tr><th scope="col">Day / time</th><th scope="col">Temp</th><th scope="col">Humidity</th><th scope="col">UV</th><th scope="col">Conditions</th></tr></thead><tbody id="forecast"></tbody></table><p id="status" class="small" role="status">Loading weather…</p></section>
+</div>
+<section class="panel sports"><div class="sports-top"><div class="heading"><h2>Sports scores</h2><span class="pill" id="page-label">Auto-rotate</span></div><p id="sports-summary" class="small">AFL · Tennis ATP · Tennis WTA</p></div><div id="matches" aria-label="Sports matches"></div><div class="sports-foot"><p id="sports-status" role="status">Connecting to score feeds…</p><p id="retention-note">Finals saved for 24h · checks every 2 minutes</p></div></section>
+</div>
+<footer><span>Weather: <a href="https://open-meteo.com/">Open-Meteo</a> · Locations: <a href="https://www.geonames.org/">GeoNames</a> · Scores: <a href="https://www.espn.com/">ESPN</a></span><span>Times local to weather location · Keep computer awake and connected</span></footer>
+<div id="settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden><div class="dialog"><div class="heading"><h2 id="settings-title">Set up your board</h2><button id="close-settings" type="button">Done</button></div><div class="settings-content"><section><h3>Weather location</h3><p>Search for a suburb or city, then select the correct result.</p><form id="search-form"><input id="query" aria-label="Suburb or city" placeholder="Caulfield, Australia" minlength="2" required><button id="search-button">Search</button></form><div id="results"></div><p id="search-status" role="status"></p><button id="locate" type="button">Use computer location</button><p id="location-status" role="status"></p></section><section><h3>Choose sports</h3><fieldset><legend class="small">Australian competition + international tennis</legend><label class="choice"><input type="checkbox" id="sport-afl" checked>AFL</label><label class="choice"><input type="checkbox" id="sport-atp" checked>Tennis · men's tour (ATP)</label><label class="choice"><input type="checkbox" id="sport-wta" checked>Tennis · women's tour (WTA)</label></fieldset><label for="retention">Keep final results</label><select id="retention"><option value="24">24 hours</option><option value="12">12 hours</option></select><p class="small">Measured from when this browser first receives a final result. Saved results survive a page reload.</p><p class="small">Extra matches rotate every 15 seconds. Live, final and upcoming matches all get a turn.</p></section></div><p id="storage-note" class="settings-note">Settings save automatically on this browser. ESPN feeds are unofficial and coverage may vary. Unavailable feeds are labelled; scores are never invented.</p><p class="settings-note">This display scales to fit your screen with no scrolling. Landscape is best for readability.</p></div></div>
+</main>
+<script>
+
+'use strict';
+const REFRESH_MS = 30 * 60 * 1000; // Change 30 to 60 for hourly refreshes.
+const HOUR = 3600000;
+const $ = id => document.getElementById(id);
+const fallback = { latitude: -37.8136, longitude: 144.9631, name: 'Melbourne (fallback)' };
+let place, data, fetchedAt = 0, failed = false, controller, locationVersion = 0;
+const codes = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Light freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Light freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Light showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with heavy hail'};
+const value = (n, suffix = '', digits = 0) => typeof n === 'number' && Number.isFinite(n) ? n.toFixed(digits) + suffix : '—';
+const condition = code => codes[code] || 'Unavailable';
+function dateLabel(ms, options) { return new Intl.DateTimeFormat('en-AU', { timeZone: data?.timezone || 'Australia/Melbourne', ...options }).format(ms); }
+function savePlace(p) { try { if (p) localStorage.setItem('weather-board-place', JSON.stringify(p)); else localStorage.removeItem('weather-board-place'); } catch {} }
+function validPlace(p) { return p && Number.isFinite(p.latitude) && Math.abs(p.latitude) <= 90 && Number.isFinite(p.longitude) && Math.abs(p.longitude) <= 180 && typeof p.name === 'string'; }
+async function json(url, signal) {
+  const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error('Service unavailable');
+  const result = await response.json();
+  if (result.error) throw new Error('Service error');
+  return result;
+}
+function selectPlace(p, remember = false) {
+  locationVersion++;
+  place = p; data = null; failed = false; fetchedAt = 0;
+  $('location').textContent = p.name;
+  $('current').hidden = true; $('forecast').replaceChildren();
+  $('results').replaceChildren();
+  savePlace(remember ? p : null);
+  refreshWeather();
+}
+async function refreshWeather() {
+  if (!place) return;
+  controller?.abort();
+  const request = new AbortController(); controller = request;
+  const timeout = setTimeout(() => request.abort(), 20000);
+  $('status').textContent = 'Updating weather…';
+  const params = new URLSearchParams({ latitude: place.latitude, longitude: place.longitude, current: 'temperature_2m,relative_humidity_2m,weather_code', hourly: 'temperature_2m,relative_humidity_2m,uv_index,weather_code', timezone: 'auto', timeformat: 'unixtime', forecast_days: '3' });
+  try {
+    const next = await json('https://api.open-meteo.com/v1/forecast?' + params, request.signal);
+    if (controller !== request) return;
+    if (!next.current || !Array.isArray(next.hourly?.time) || !next.hourly.time.length) throw new Error('Incomplete weather');
+    for (const key of ['temperature_2m', 'relative_humidity_2m', 'uv_index', 'weather_code']) {
+      if (!Array.isArray(next.hourly[key]) || next.hourly[key].length !== next.hourly.time.length) throw new Error('Incomplete forecast');
+    }
+    data = next; fetchedAt = Date.now(); failed = false; render();
+  } catch {
+    if (controller !== request) return;
+    failed = true;
+    render();
+  } finally { clearTimeout(timeout); }
+}
+function render() {
+  const stale = failed || (fetchedAt > 0 && Date.now() - fetchedAt > REFRESH_MS + 60000);
+  $('status').className = stale ? 'small notice' : 'small';
+  if (!data) {
+    $('status').textContent = failed ? 'Weather could not load. Check your internet connection. Retrying automatically every 30 minutes.' : 'Loading weather…';
+    return;
+  }
+  $('status').textContent = (stale ? 'Update overdue or failed — showing older data. ' : '') + 'Last retrieved ' + dateLabel(fetchedAt, { hour: 'numeric', minute: '2-digit' }) + ' · refreshes every 30 minutes';
+  const c = data.current, h = data.hourly;
+  $('current').hidden = false;
+  $('temperature').textContent = value(c.temperature_2m, '°C', 1);
+  $('humidity').textContent = value(c.relative_humidity_2m, '%');
+  $('conditions').textContent = condition(c.weather_code);
+  const uvIndex = h.time.findIndex(t => t <= c.time && t + 3600 > c.time);
+  $('uv').textContent = value(h.uv_index[uvIndex], '', 1);
+  $('as-of').textContent = 'Conditions as of ' + dateLabel(c.time * 1000, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  $('forecast').replaceChildren();
+  // Use actual Unix timestamps for comparisons; Intl handles local time and DST.
+  const now = Date.now();
+  const first = h.time.findIndex(t => t * 1000 > now);
+  if (first < 0) return;
+  for (let i = first; i < h.time.length && h.time[i] * 1000 <= now + 24 * HOUR; i += 3) {
+    const row = document.createElement('tr');
+    const cells = [dateLabel(h.time[i] * 1000, { weekday: 'short', hour: 'numeric', minute: '2-digit' }), value(h.temperature_2m[i], '°C', 1), value(h.relative_humidity_2m[i], '%'), value(h.uv_index[i], '', 1), condition(h.weather_code[i])];
+    for (const text of cells) { const cell = document.createElement('td'); cell.textContent = text; row.append(cell); }
+    $('forecast').append(row);
+  }
+}
+function locate() {
+  const version = ++locationVersion;
+  $('location-status').textContent = 'Requesting computer location…';
+  const failure = () => {
+    if (version !== locationVersion) return;
+    $('location-status').textContent = place ? 'Location unavailable. Keeping the selected location; you can also search above.' : 'Location unavailable. Using Melbourne; search above to change it.';
+    if (!place) selectPlace(fallback);
+  };
+  if (!navigator.geolocation) return failure();
+  navigator.geolocation.getCurrentPosition(pos => {
+    if (version !== locationVersion) return;
+    $('location-status').textContent = 'Using the location supplied by your browser.';
+    selectPlace({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, name: 'Computer location' });
+  }, failure, { timeout: 10000, maximumAge: 300000 });
+}
+$('locate').addEventListener('click', locate);
+$('search-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const query = $('query').value.trim();
+  if (query.length < 2) return;
+  $('search-button').disabled = true;
+  $('results').replaceChildren(); $('search-status').textContent = 'Searching…';
+  const abort = new AbortController(); const timeout = setTimeout(() => abort.abort(), 15000);
+  try {
+    const result = await json('https://geocoding-api.open-meteo.com/v1/search?' + new URLSearchParams({ name: query, count: '3', language: 'en', format: 'json' }), abort.signal);
+    const places = result.results || [];
+    $('search-status').textContent = places.length ? 'Select the correct location:' : 'No matches. Try a nearby city or add the country name.';
+    for (const p of places) {
+      const name = [p.name, p.admin1, p.country].filter(Boolean).join(', ');
+      const button = document.createElement('button'); button.type = 'button'; button.textContent = name;
+      button.addEventListener('click', () => { $('search-status').textContent = ''; $('location-status').textContent = 'Selected suburb saved on this browser.'; selectPlace({ latitude: p.latitude, longitude: p.longitude, name }, true); });
+      $('results').append(button);
+    }
+  } catch { $('search-status').textContent = 'Search unavailable. Check your connection and try again.'; }
+  finally { clearTimeout(timeout); $('search-button').disabled = false; }
+});
+function tick() { $('clock').textContent = dateLabel(Date.now(), { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }); if (data) render(); }
+let saved;
+try { saved = JSON.parse(localStorage.getItem('weather-board-place')); } catch {}
+if (validPlace(saved)) selectPlace(saved, true); else locate();
+setInterval(refreshWeather, REFRESH_MS);
+setInterval(tick, 60000);
+window.addEventListener('online', refreshWeather);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); if (Date.now() - fetchedAt >= REFRESH_MS) refreshWeather(); } });
+tick();
+
+</script>
+<script>
+'use strict';
+// This fixed display scales as a whole: no scrollbars and no clipped rows.
+function fitBoard(){const scale=Math.min(innerWidth/1280,innerHeight/720);const b=$('board');b.style.transform=`scale(${scale})`;b.style.left=((innerWidth-1280*scale)/2)+'px';b.style.top=((innerHeight-720*scale)/2)+'px';}
+addEventListener('resize',fitBoard);fitBoard();
+$('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('fullscreen').textContent='Use F11';}});
+$('open-settings').addEventListener('click',()=>{$('settings').hidden=false;$('close-settings').focus();});
+function closeSettings(){$('settings').hidden=true;$('open-settings').focus();}
+$('close-settings').addEventListener('click',closeSettings);
+$('settings').addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();if(e.key==='Tab'){const items=[...$('settings').querySelectorAll('button,input,select')].filter(x=>!x.disabled);const first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+const SPORTS={afl:{name:'AFL',path:'australian-football/afl'},atp:{name:'Tennis ATP',path:'tennis/atp'},wta:{name:'Tennis WTA',path:'tennis/wta'}};
+const SPORTS_REFRESH=120000,SPORTS_KEY='shabbos-sports-v1',PREF_KEY='shabbos-sports-settings-v1';
+function load(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}}
+function persist(key,obj){try{localStorage.setItem(key,JSON.stringify(obj));}catch{$('storage-note').textContent='Browser storage unavailable. Results and settings will be kept only until this page is closed.';}}
+let prefs=load(PREF_KEY,{});if(!prefs||typeof prefs!=='object')prefs={};
+let enabled=Array.isArray(prefs.enabled)?prefs.enabled.filter(x=>SPORTS[x]):Object.keys(SPORTS);
+let retention=[12,24].includes(Number(prefs.retention))?Number(prefs.retention):24;
+let cache=load(SPORTS_KEY,{});if(!cache||typeof cache!=='object'||Array.isArray(cache))cache={};
+for(const [id,m] of Object.entries(cache)){if(!m||!SPORTS[m.sport]||!Array.isArray(m.sides)||!Number.isFinite(m.start)||!Number.isFinite(m.lastSeen))delete cache[id];}
+const feedState={};let sportsBusy=false,page=0;
+const numericScore=s=>s!==null&&s!==undefined?(typeof s==='object'?String(s.displayValue??s.value??'—'):String(s)):'—';
+// Tennis scoreboards group individual matches below tournaments; AFL uses competitions directly.
+function parseMatches(payload,sport){
+  if(!Array.isArray(payload.events))throw new Error('Unexpected scoreboard');
+  const found=new Map();
+  function visit(node,tournament){
+    if(!node||typeof node!=='object')return;
+    if(Array.isArray(node.competitors)&&node.competitors.length===2&&node.id){
+      const type=node.status?.type||{},start=Date.parse(node.startDate||node.date);
+      if(!Number.isFinite(start))return;
+      const sides=node.competitors.map(c=>({name:c.athlete?.displayName||c.team?.displayName||c.roster?.displayName||c.displayName||'To be confirmed',winner:!!c.winner,score:numericScore(c.score),sets:(c.linescores||[]).map(x=>numericScore(x.value)),point:c.point!==undefined?numericScore(c.point):null}));
+      const state=type.completed?'post':type.state==='in'?'in':'pre';
+      found.set(sport+':'+node.id,{id:sport+':'+node.id,sport,start,state,status:type.shortDetail||type.detail||type.description||'Scheduled',title:tournament||SPORTS[sport].name,sides});
+      return;
+    }
+    for(const key of ['competitions','groupings','events'])for(const child of node[key]||[])visit(child,tournament||node.name);
+  }
+  for(const event of payload.events)visit(event,event.name);
+  return [...found.values()];
+}
+function mergeMatches(matches,sport,now=Date.now()){
+  for(const m of matches){
+    const prev=cache[m.id];
+    // Don't reintroduce old tournament results. A previously observed live match can finish later.
+    if(m.state==='post'&&!prev&&m.start<now-36*HOUR)continue;
+    if(m.start>now+48*HOUR)continue;
+    cache[m.id]={...m,lastSeen:now,firstFinal:m.state==='post'?(prev?.firstFinal||now):null};
+  }
+  for(const [id,m] of Object.entries(cache)){
+    if((m.firstFinal&&m.firstFinal<now-7*24*HOUR)||(!m.firstFinal&&m.lastSeen<now-48*HOUR))delete cache[id];
+  }
+  persist(SPORTS_KEY,cache);
+}
+function visibleMatches(now=Date.now()){
+  return Object.values(cache).filter(m=>enabled.includes(m.sport)&&(m.state==='post'?m.firstFinal&&now-m.firstFinal<retention*HOUR:m.state==='in'?now-m.lastSeen<6*HOUR:m.start>=now-3*HOUR&&m.start<=now+48*HOUR)).sort((a,b)=>({in:0,post:1,pre:2}[a.state]-{in:0,post:1,pre:2}[b.state])||(a.state==='post'?b.firstFinal-a.firstFinal:a.start-b.start));
+}
+async function refreshSports(){
+  if(sportsBusy)return;sportsBusy=true;
+  const from=new Date(Date.now()-2*24*HOUR).toISOString().slice(0,10).replaceAll('-','');
+  const to=new Date(Date.now()+2*24*HOUR).toISOString().slice(0,10).replaceAll('-','');
+  try{
+    for(const sport of [...enabled]){
+      const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),15000);
+      try{
+        const payload=await json('https://site.api.espn.com/apis/site/v2/sports/'+SPORTS[sport].path+'/scoreboard?'+new URLSearchParams({dates:from+'-'+to,limit:'1000'}),abort.signal);
+        mergeMatches(parseMatches(payload,sport),sport);
+        feedState[sport]={ok:true,at:Date.now()};
+      }catch{feedState[sport]={ok:false,at:feedState[sport]?.at||0};}
+      finally{clearTimeout(timer);renderSports();}
+    }
+  }finally{sportsBusy=false;renderSports();}
+}
+function element(tag,className,text){const el=document.createElement(tag);el.className=className;if(text!==undefined)el.textContent=text;return el;}
+function renderSports(){
+  const matches=visibleMatches(),pages=Math.max(1,Math.ceil(matches.length/3));page%=pages;
+  $('sports-summary').textContent=enabled.map(x=>SPORTS[x].name).join(' · ')||'Sports switched off';
+  $('page-label').textContent=`${page+1} / ${pages} · every 15s`;
+  $('retention-note').textContent=`Finals saved for ${retention}h · checks every 2 minutes`;
+  const unavailable=enabled.filter(x=>feedState[x]?.ok===false||feedState[x]?.at&&Date.now()-feedState[x].at>SPORTS_REFRESH*2);
+  const waiting=enabled.filter(x=>!feedState[x]);
+  $('sports-status').textContent=unavailable.length?'Feed unavailable: '+unavailable.map(x=>SPORTS[x].name).join(', '):waiting.length?'Connecting to '+waiting.map(x=>SPORTS[x].name).join(', '):enabled.length?'Scores may be delayed · finals remain in rotation':'Choose sports in Settings';
+  $('sports-status').className=unavailable.length?'notice':'';
+  $('matches').replaceChildren();
+  for(const m of matches.slice(page*3,page*3+3)){
+    const stale=!feedState[m.sport]?.ok||Date.now()-m.lastSeen>SPORTS_REFRESH*2;
+    const card=element('article','match'),head=element('div','match-head');
+    head.append(element('span','',SPORTS[m.sport].name+' · '+m.title));
+    head.append(element('span','match-status '+(stale&&m.state!=='post'?'notice':m.state==='in'?'live':''),m.state==='post'?'Final':stale?'Last known':m.state==='in'?'In progress':'Upcoming'));
+    card.append(head);
+    for(const side of m.sides){const row=element('div','side'+(side.winner?' winner':''));row.append(element('span','name',side.name));let score=m.state==='pre'?'—':m.sport==='afl'?side.score:side.sets.length?side.sets.join('  '):side.score;row.append(element('span','score',score));card.append(row);}
+    const detail=m.state==='pre'?dateLabel(m.start,{weekday:'short',hour:'numeric',minute:'2-digit'}):m.status+(m.sport!=='afl'?' · games in each set':'')+(stale&&m.state!=='post'?' · update overdue':'');
+    card.append(element('div','match-detail',detail));$('matches').append(card);
+  }
+  if(!matches.length){const card=element('div','match empty');card.append(element('h3','',enabled.length?'No scores to show yet':'Weather-only mode'));card.append(element('p','',unavailable.length?'The selected feed could not be reached. The board will retry automatically.':waiting.length?'Checking live matches, recent results and upcoming fixtures…':enabled.length?'No matching games returned for this time window.':'Choose your sports in Settings.'));$('matches').append(card);}
+}
+function savePrefs(){enabled=Object.keys(SPORTS).filter(x=>$('sport-'+x).checked);retention=Number($('retention').value);persist(PREF_KEY,{enabled,retention});page=0;renderSports();refreshSports();}
+for(const sport of Object.keys(SPORTS)){$('sport-'+sport).checked=enabled.includes(sport);$('sport-'+sport).addEventListener('change',savePrefs);}
+$('retention').value=String(retention);$('retention').addEventListener('change',savePrefs);
+renderSports();refreshSports();
+setInterval(refreshSports,SPORTS_REFRESH);
+setInterval(()=>{if($('settings').hidden){page++;renderSports();}},15000);
+addEventListener('online',refreshSports);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderSports();refreshSports();}});
+</script>
+</body></html>
